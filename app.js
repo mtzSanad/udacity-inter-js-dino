@@ -1,3 +1,8 @@
+//Selecing required elements
+const form = document.querySelector("#dino-compare");
+const btn = document.querySelector("#btn");
+const grid = document.querySelector("#grid");
+
 /**
  * Creating A generic class to be inherted by human and dino
  */
@@ -14,7 +19,7 @@ function Mamal(weight, diet, img) {
  **/
 function Dino(species, height, where, when, fact, img, weight, diet) {
   //Calling the super constructor to set Dino object properties
-  Mamal.call(img, weight, diet);
+  Mamal.call(this, weight, diet, img);
 
   //Setting the properties
   this.species = species;
@@ -64,11 +69,11 @@ Dino.prototype.compareDiet = function (humanDiet) {
  * Creating human constructor using the properties used in html form
  * we also add image property, but this will be fixed not passed as param
  */
-function Human(name, feet, inches, img, weight, diet) {
-  Mamal.call(img, weight, diet);
+function Human(hName, feet, inches, img, weight, diet) {
+  Mamal.call(this, weight, diet, img);
 
   //setting the properties
-  this.name = name;
+  this.hName = hName;
   this.feet = feet;
   this.inches = inches;
   //Short circuit image to a default
@@ -89,15 +94,16 @@ Human.prototype.getHeght = function () {
 // This IIFE will return a function when called it will create a human object
 const human = (function () {
   return function () {
-    const formElements = document.querySelector("#dino-compare").elements;
+    const formElements = form.elements;
     const humanProperties = {};
     //Filling the humanProperties object with values from the form
     for (let i = 0; i < formElements.length; i++) {
-      //The element will contains the attribute name and value
+      //The element will contains the attribute hName and value
       const element = formElements.item(i);
       //Now fill the object properties with values from element
       humanProperties[element.name] = element.value;
     }
+
     return new Human(
       humanProperties.name,
       humanProperties.feet,
@@ -109,28 +115,87 @@ const human = (function () {
   };
 })();
 
-// Create Dino Compare Method 1
-// NOTE: Weight in JSON file is in lbs, height in inches.
-
-// Create Dino Compare Method 2
-// NOTE: Weight in JSON file is in lbs, height in inches.
-
-// Create Dino Compare Method 3
-// NOTE: Weight in JSON file is in lbs, height in inches.
-
 // Generate Tiles for each Dino in Array
 /**
  * This function create tiles either for human, dino or bird
  */
-const tile = function (species, img, fact) {};
+const tile = function (species, img, fact, hName) {
+  //Creating a wrapping div
+  const tileDiv = document.createElement("div");
+  tileDiv.className = "grid-item";
 
-// Add tiles to DOM
+  //Adding heading3 species or named
+  const headeing3 = document.createElement("h3");
+  headeing3.textContent = species ? species : hName;
+  tileDiv.appendChild(headeing3);
 
-// Remove form from screen
+  //Adding Image
+  const imgElement = document.createElement("img");
+  imgElement.setAttribute("src", img);
+  imgElement.setAttribute("alt", headeing3.textContent);
+  tileDiv.appendChild(imgElement);
+
+  //Adding Fact
+  const p = document.createElement("p");
+  p.textContent = fact;
+  tileDiv.appendChild(p);
+
+  return tileDiv;
+};
+
+//Creating Dino objects from json file
+let dinoArray = [];
+(async function () {
+  const response = await fetch("./dino.json");
+  const { Dinos } = await response.json();
+
+  dinoArray = Dinos.map((dino) => {
+    return new Dino(
+      dino.species,
+      dino.height,
+      dino.where,
+      dino.when,
+      dino.fact,
+      `./images/${dino.species.toLowerCase()}.png`,
+      dino.weight,
+      dino.diet
+    );
+  });
+})();
 
 // On button click, prepare and display infographic
 //Setting on click listener on btn
-const btn = document.querySelector("#btn");
 btn.addEventListener("click", (e) => {
-  //Reading
+  //Initialize tiles object array
+  const tilesArray = [];
+
+  // Remove form from screen
+  form.style.display = "none";
+
+  // Gettting the human object from the form
+  const humanObject = human();
+
+  console.log(dinoArray);
+  //Creating dino objects
+  for (let i = 0; i < 9; i++) {
+    //Adding human to be in center
+    if (i === 4) {
+      tilesArray.push(humanObject);
+      continue;
+    }
+
+    tilesArray.push(dinoArray.shift());
+  }
+  debugger;
+  // Add tiles to DOM
+  for (let index in tilesArray) {
+    const element = tilesArray[index];
+    const tileDiv = tile(
+      element.species,
+      element.img,
+      element.fact,
+      element.hName
+    );
+    grid.appendChild(tileDiv);
+  }
 });

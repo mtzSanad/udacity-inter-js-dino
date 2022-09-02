@@ -47,7 +47,6 @@ Dino.prototype.compareWeight = function (humanWeight) {
 
 //Adding Dino comparing functions2
 Dino.prototype.compareHeight = function (humanHeight) {
-  debugger;
   if (this.height > humanHeight) {
     this.fact = `It looks that ${this.species} is taller than you!`;
   } else if (this.height < humanHeight) {
@@ -189,7 +188,6 @@ btn.addEventListener("click", (e) => {
           break;
         case 1:
           //Call method to get the correct human hieght
-          debugger;
           humanObject.getHeight();
           dinoObject.compareHeight(humanObject.height);
           break;

@@ -37,31 +37,32 @@ Dino.prototype.constructor = Dino;
 //Adding Dino comparing functions1
 Dino.prototype.compareWeight = function (humanWeight) {
   if (this.weight > humanWeight) {
-    return `It looks that ${this.species} is heavier than you!`;
+    this.fact = `It looks that ${this.species} is heavier than you!`;
   } else if (this.weight < humanWeight) {
-    return `It looks that ${this.species} is lighter than you!`;
+    this.fact = `It looks that ${this.species} is lighter than you!`;
   } else {
-    return `Wow you both have the same weight!`;
+    this.fact = `Wow you both have the same weight!`;
   }
 };
 
 //Adding Dino comparing functions2
 Dino.prototype.compareHeight = function (humanHeight) {
+  debugger;
   if (this.height > humanHeight) {
-    return `It looks that ${this.species} is taller than you!`;
+    this.fact = `It looks that ${this.species} is taller than you!`;
   } else if (this.height < humanHeight) {
-    return `It looks that ${this.species} is shorter than you!`;
+    this.fact = `It looks that ${this.species} is shorter than you!`;
   } else {
-    return `Wow you both have the same height!`;
+    this.fact = `Wow you both have the same height!`;
   }
 };
 
 //Adding Dino comparing functions3
 Dino.prototype.compareDiet = function (humanDiet) {
-  if (this.diet === humanDiet) {
-    return `Wow you both eat ${this.diet}!`;
+  if (this.diet === humanDiet.toLowerCase()) {
+    this.fact = `Wow you both eat ${this.diet}!`;
   } else {
-    return `Looks like ${this.species} eats ${this.diet} and you eat ${humanDiet}!`;
+    this.fact = `Looks like ${this.species} eats ${this.diet} and you eat ${humanDiet}!`;
   }
 };
 
@@ -83,9 +84,9 @@ Human.prototype = Object.create(Mamal);
 Human.prototype.constructor = Human;
 
 //Adding human methods to its prototype
-Human.prototype.getHeght = function () {
+Human.prototype.getHeight = function () {
   //Assuming that the heights provided for dino in dino.json is in inches, we will need to get human total height in same unit
-  return this.feet * 12 + this.inches;
+  this.height = +this.feet * 12 + +this.inches;
 };
 
 // Create Dino Objects
@@ -175,8 +176,32 @@ btn.addEventListener("click", (e) => {
   // Gettting the human object from the form
   const humanObject = human();
 
-  console.log(dinoArray);
-  //Creating dino objects
+  //Random changing 3 dino facts with comparing facts
+  let shuffleDino = [0, 1, 2, 3, 4, 5, 6].sort(() => 0.5 - Math.random());
+  let factsChangingDino = shuffleDino.splice(0, 3);
+  let counter = 0;
+
+  dinoArray.forEach((dinoObject, indx) => {
+    if (factsChangingDino.includes(indx)) {
+      switch (counter) {
+        case 0:
+          dinoObject.compareDiet(humanObject.diet);
+          break;
+        case 1:
+          //Call method to get the correct human hieght
+          debugger;
+          humanObject.getHeight();
+          dinoObject.compareHeight(humanObject.height);
+          break;
+        case 2:
+          dinoObject.compareWeight(humanObject.weight);
+          break;
+      }
+      counter++;
+    }
+  });
+
+  //Creating tiles array
   for (let i = 0; i < 9; i++) {
     //Adding human to be in center
     if (i === 4) {
@@ -186,7 +211,7 @@ btn.addEventListener("click", (e) => {
 
     tilesArray.push(dinoArray.shift());
   }
-  debugger;
+
   // Add tiles to DOM
   for (let index in tilesArray) {
     const element = tilesArray[index];

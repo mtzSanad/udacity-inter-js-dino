@@ -178,9 +178,9 @@ btn.addEventListener("click", (e) => {
   //Random changing 3 dino facts with comparing facts
   let shuffleDino = [0, 1, 2, 3, 4, 5, 6].sort(() => 0.5 - Math.random());
   let factsChangingDino = shuffleDino.splice(0, 3);
-  let counter = 0;
 
   dinoArray.forEach((dinoObject, indx) => {
+    let counter = Math.floor(Math.random() * 2) + 1;
     if (factsChangingDino.includes(indx)) {
       switch (counter) {
         case 0:
